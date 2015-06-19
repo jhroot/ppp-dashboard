@@ -18,10 +18,10 @@ The Event message results in the recording of an event against a version and run
 
 ```json
 {
-	"item-identifier": '00288',
+	"item-identifier": "00288",
 	"version": 2,
 	"run": 1,
-	"type": "Image resizing"",
+	"type": "Image resizing",
 	"timestamp": "2015-05-23T18:25:43.511Z",
 	"status": "start",
 	"message": ""
