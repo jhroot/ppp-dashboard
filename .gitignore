@@ -1,0 +1,9 @@
+*sublime*
+ftp-credentials.txt
+*.log
+*.pyc
+settings.py
+.boto
+tmp
+venv
+.idea

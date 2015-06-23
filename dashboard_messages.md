@@ -18,10 +18,11 @@ The Event message results in the recording of an event against a version and run
 
 ```json
 {
+	"message-type": "event"
 	"item-identifier": "00288",
 	"version": 2,
 	"run": 1,
-	"type": "Image resizing",
+	"event-type": "Image resizing",
 	"timestamp": "2015-05-23T18:25:43.511Z",
 	"status": "start",
 	"message": ""
@@ -30,10 +31,11 @@ The Event message results in the recording of an event against a version and run
 
 ```json
 {
+	"message-type": "event"
 	"item-identifier": "00288",
 	"version": 2,
 	"run": 1,
-	"type": "EIF submission",
+	"event-type": "EIF submission",
 	"timestamp": "2015-05-19T10:25:33.345Z",
 	"status": "error",
 	"message": "Could not contact EIF ingestion endpoint"
@@ -55,6 +57,7 @@ The dashboard may display these properties and/or use them to choose an 'event m
 
 ```json
 {
+	"message-type": "property"
 	"item-identifier": "00288",
 	"name": "Title",
 	"value": "Rapid localized spread and immunologic containment define Herpes simplex virus-2 reactivation in the human genital tract",
@@ -64,6 +67,7 @@ The dashboard may display these properties and/or use them to choose an 'event m
 
 ```json
 {
+	"message-type": "property"
 	"item-identifier": "00288",
 	"name": "Corresponding authors",
 	"value": "Ian T Baldwin, Max Planck, John Anderson, Thomas Peel",
