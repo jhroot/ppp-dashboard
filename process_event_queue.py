@@ -6,7 +6,6 @@ from optparse import OptionParser
 import log
 import boto.sqs
 from multiprocessing import Pool
-from functools import partial
 import json
 
 settings = {}
@@ -28,10 +27,7 @@ def main():
     logger = log.logger(log_file, settings.log_level)
 
     # Simple connect
-    conn = boto.sqs.connect_to_region(settings.sqs_region,
-                                      aws_access_key_id=settings.aws_access_key_id,
-                                      aws_secret_access_key=settings.aws_secret_access_key)
-    queue = conn.get_queue(settings.event_monitor_queue)
+    queue = get_queue()
 
     pool = Pool(settings.event_queue_pool_size)
 
@@ -43,6 +39,14 @@ def main():
             pool.map(process_message, messages)
         else:
             logger.info("No messages received")
+
+
+def get_queue():
+    conn = boto.sqs.connect_to_region(settings.sqs_region,
+                                      aws_access_key_id=settings.aws_access_key_id,
+                                      aws_secret_access_key=settings.aws_secret_access_key)
+    queue = conn.get_queue(settings.event_monitor_queue)
+    return queue
 
 
 def process_message(message):
