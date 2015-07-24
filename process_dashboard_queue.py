@@ -7,9 +7,11 @@ import log
 import boto.sqs
 from multiprocessing import Pool
 import json
+import dashboard_data_access
 
-settings = {}
-logger = {}
+settings = None
+logger = None
+
 
 def main():
     parser = OptionParser()
@@ -22,7 +24,7 @@ def main():
     global settings
     settings = settings_lib.get_settings(env)
 
-    log_file = "process_event_queue.log"
+    log_file = "process_dashboard_queue.log"
     global logger
     logger = log.logger(log_file, settings.log_level)
 
@@ -51,21 +53,37 @@ def get_queue():
 
 def process_message(message):
     message_payload = json.loads(message.get_body())
-    message_type = message_payload.get('message-type')
+    message_type = message_payload.get('message_type')
     if message_type is not None:
         if message_type in dispatch:
             dispatch[message_type](message_payload)
         else:
             logger.error('Unknown message type ' + message_type)
+    message.delete()
+
 
 def process_event_message(message):
-    print message['item-identifier']
+    try:
+        dashboard_data_access.store_event(message.get('version'), message.get('run'), message.get('event_type'),
+                                          message.get('timestamp'), message.get('status'), message.get('message'),
+                                          message.get('item_identifier'), message.get('message_id'))
+    except Exception:
+        logger.exception("Error processing event message ")
+
 
 def process_property_message(message):
+    try:
+        dashboard_data_access.store_property(message.get('property_type'), message.get('name'), message.get('value'),
+                                             message.get('item_identifier'), message.get('message_id'))
+    except Exception:
+        logger.exception("Error processing property message ")
+
+
+def get_rds_connection():
     pass
 
-dispatch = {'event': process_event_message, 'property': process_property_message}
 
+dispatch = {'event': process_event_message, 'property': process_property_message}
 
 if __name__ == "__main__":
     main()

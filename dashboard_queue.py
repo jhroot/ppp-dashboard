@@ -1,8 +1,7 @@
-import datetime
 import boto.sqs
 from boto.sqs.message import Message
-import settings as settings_lib
 import json
+import uuid
 
 
 def send_event_message(message, settings):
@@ -18,23 +17,27 @@ def send_event_message(message, settings):
 
 def build_event_message(item_identifier, version, run, event_type, timestamp, status, message):
     message = {
-        'message-type': 'event',
-        'item-identifier': item_identifier,
+        'message_type': 'event',
+        'item_identifier': item_identifier,
         'version': version,
         'run': run,
-        'event-type': event_type,
+        'event_type': event_type,
         'timestamp': timestamp.isoformat(),
-        'status': status, message: message
+        'status': status,
+        'message': message,
+        'message_id': str(uuid.uuid4())
     }
     return message
 
 
-def main():
-    env = 'exp'
-    settings = settings_lib.get_settings(env)
-    message = build_event_message("00001", "1", "1", "Image resizing", datetime.datetime.now(), "start", "")
-    send_event_message(message, settings)
+def build_property_message(item_identifier, name, value, property_type):
+    message = {
+        'message_type': 'property',
+        'item_identifier': item_identifier,
+        'name': name,
+        'value': value,
+        'property_type': property_type,
+        'message_id': str(uuid.uuid4())
+    }
+    return message
 
-
-if __name__ == "__main__":
-    main()

@@ -1,0 +1,26 @@
+<html>
+  <head>
+    <title>Events for {{ item_identifier }}</title>
+  </head>
+  <body>
+      <h1>Events for {{ item_identifier }}</h1>
+        <ul>
+            {%  for version in events %}
+                <li>
+                    Version: {{  version }}
+                    <ul>
+                        {% for run in events[version] %}
+                            <li>Run:{{ run }}
+                            <p>Events for run:</p>
+                            <ul>
+                                {% for event in events[version][run] %}
+                                    <li>Timestamp: {{ event.timestamp }}, Id: {{ event.event_id }}, Type: {{ event.event_type }}</li>
+                                {% endfor %}
+                            </ul>
+                        {%  endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+  </body>
+</html>
