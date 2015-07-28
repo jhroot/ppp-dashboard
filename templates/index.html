@@ -1,0 +1,21 @@
+<html>
+  <head>
+    <title>Articles</title>
+  </head>
+  <body>
+      <h1>Articles</h1>
+        <ul>
+            {%  for article in articles %}
+                <li>
+                    ID: {{  article.item_id }} IDENTIFIER: {{  article.item_identifier }}
+                    <ul>
+                        {% for property in article.properties %}
+                            <li>Name:{{ property.name }} Value:{{ property.value }}</li>
+                        {%  endfor %}
+                    </ul>
+                    <p><a href="/event/{{article.item_identifier}}">list events</a> | <font color="#AAAAAA">publish article</font></p>
+                </li>
+            {% endfor %}
+        </ul>
+  </body>
+</html>
