@@ -52,14 +52,17 @@ def get_queue():
 
 
 def process_message(message):
-    message_payload = json.loads(message.get_body())
-    message_type = message_payload.get('message_type')
-    if message_type is not None:
-        if message_type in dispatch:
-            dispatch[message_type](message_payload)
-        else:
-            logger.error('Unknown message type ' + message_type)
-    message.delete()
+    try:
+        message_payload = json.loads(message.get_body())
+        message_type = message_payload.get('message_type')
+        if message_type is not None:
+            if message_type in dispatch:
+                dispatch[message_type](message_payload)
+            else:
+                logger.error('Unknown message type ' + message_type)
+        message.delete()
+    except Exception:
+        logger.exception("Error processing message")
 
 
 def process_event_message(message):

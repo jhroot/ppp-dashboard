@@ -14,7 +14,7 @@
                             <p>Events for run:</p>
                             <ul>
                                 {% for event in events[version][run] %}
-                                    <li>Timestamp: {{ event.timestamp }}, Id: {{ event.event_id }}, Type: {{ event.event_type }}</li>
+                                    <li>Timestamp: {{ event.timestamp }}, Id: {{ event.event_id }}, Type: {{ event.event_type }}, Status: {{ event.status }}</li>
                                 {% endfor %}
                             </ul>
                         {%  endfor %}

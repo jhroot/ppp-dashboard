@@ -27,7 +27,7 @@ CREATE INDEX Item_idx_1 on Item (item_id ASC);
 CREATE TABLE event (
     event_id SERIAL ,
     version int  NOT NULL,
-    run int  NOT NULL,
+    run varchar(255)  NOT NULL,
     type varchar(255)  NOT NULL,
     timestamp timestamp  NOT NULL,
     status varchar(255)  NOT NULL,
