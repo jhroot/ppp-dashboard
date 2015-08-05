@@ -5,9 +5,15 @@ store_event_sql = 'insert into event (version, run, type, timestamp, status, mes
                   'select %s, %s, %s, %s, %s, %s, %s, %s where not exists ' \
                   '(select * from event where message_id = %s)'
 
+
 store_property_sql = 'insert into property (property_type, name, int_value, date_value, text_value, item_id, message_id) ' \
                      'select %s, %s, %s, %s, %s, %s, %s where not exists ' \
                      '(select * from event where message_id = %s)'
+
+update_property_sql = 'update property set property_type=%s, int_value=%s, date_value=%s, text_value = %s, message_id = ' \
+                      '%s where property_id = %s'
+
+property_id_sql = 'select property_id  from property where name=%s and item_id=%s'
 
 get_item_sql = 'select item_id from item where item_identifier = %s'
 
@@ -140,8 +146,16 @@ def store_property(property_type, name, value, item_identifier, message_id):
     else:
         # TODO: log error
         return
-    cur.execute(store_property_sql,
-                (property_type, name, int_value, date_value, text_value, item_id, message_id, message_id))
+
+    cur.execute(property_id_sql, (name, item_id))
+    conn.commit()
+    row = cur.fetchone()
+    if row is None:
+        cur.execute(store_property_sql,
+                    (property_type, name, int_value, date_value, text_value, item_id, message_id, message_id))
+    else:
+        property_id = row[0]
+        cur.execute(update_property_sql, (property_type, int_value, date_value, text_value, message_id, property_id))
     conn.commit()
     cur.close()
     conn.close()
