@@ -7,13 +7,27 @@
         <ul>
             {%  for article in articles %}
                 <li>
-                    ID: {{  article.item_id }} IDENTIFIER: {{  article.item_identifier }}
-                    <ul>
-                        {% for property in article.properties %}
-                            <li>Name:{{ property.name }} Value:{{ property.value }}</li>
-                        {%  endfor %}
+                    <p>ID: {{  article.item_id }} IDENTIFIER: {{  article.item_identifier }}</p>
+                    <p>
+                        <ul>
+                            {%  for i in article.properties %}
+                                {%  if i == 0 %}
+                                    Common Properties
+                                {%  else %}
+                                    Properties for version {{ i }}:
+                                {% endif %}
+                                {% for property in article.properties[i] %}
+                                     <li>Name:{{ property.name }} Value:{{ property.value }}
+                                     {%  if (property.name == 'publication_status' and property.value =='ready') %}
+                                        <a href="/publish/{{ article.item_identifier }}.{{ i }}">publish article</a>
+                                     {% endif %}
+                                     </li>
+                                {%  endfor %}
+                            {%  endfor %}
+                        </ul>
                     </ul>
-                    <p><a href="/event/{{article.item_identifier}}">list events</a> | <font color="#AAAAAA">publish article</font></p>
+                    </p>
+                    <p><a href="/event/{{article.item_identifier}}">list events</a></p>
                 </li>
             {% endfor %}
         </ul>

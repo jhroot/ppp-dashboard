@@ -77,7 +77,8 @@ def process_event_message(message):
 def process_property_message(message):
     try:
         dashboard_data_access.store_property(message.get('property_type'), message.get('name'), message.get('value'),
-                                             message.get('item_identifier'), message.get('message_id'))
+                                             message.get('item_identifier'), message.get('version'),
+                                             message.get('message_id'))
     except Exception:
         logger.exception("Error processing property message ")
 

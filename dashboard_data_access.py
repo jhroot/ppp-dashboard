@@ -6,14 +6,14 @@ store_event_sql = 'insert into event (version, run, type, timestamp, status, mes
                   '(select * from event where message_id = %s)'
 
 
-store_property_sql = 'insert into property (property_type, name, int_value, date_value, text_value, item_id, message_id) ' \
-                     'select %s, %s, %s, %s, %s, %s, %s where not exists ' \
+store_property_sql = 'insert into property (property_type, name, int_value, date_value, text_value, item_id, message_id, ' \
+                     ' version) select %s, %s, %s, %s, %s, %s, %s, %s where not exists ' \
                      '(select * from event where message_id = %s)'
 
 update_property_sql = 'update property set property_type=%s, int_value=%s, date_value=%s, text_value = %s, message_id = ' \
-                      '%s where property_id = %s'
+                      '%s, version=%s where property_id = %s'
 
-property_id_sql = 'select property_id  from property where name=%s and item_id=%s'
+property_id_sql = 'select property_id  from property where name=%s and item_id=%s and version=%s '
 
 get_item_sql = 'select item_id from item where item_identifier = %s'
 
@@ -21,7 +21,7 @@ insert_item_sql = 'insert into item (item_identifier) values (%s) returning item
 
 get_items_sql = 'SELECT item_id, item_identifier FROM item'
 
-get_item_properties_sql = 'select property_id, name, int_value, text_value, date_value, property_type from property ' \
+get_item_properties_sql = 'select property_id, name, int_value, text_value, date_value, property_type, version from property ' \
                           'where item_id = %s'
 
 get_events_for_item_sql = 'select event_id, version, run, type, timestamp, status, message from event ' \
@@ -47,9 +47,10 @@ def get_item_from_row(row):
 
 
 def add_properties(items):
+    # TODO this data could be retrieved in a single query
     conn, cur = get_connection()
     for item in items:
-        item_properties = []
+        item_properties = {}
         cur.execute(get_item_properties_sql, (item.get('item_id'),))
         properties = cur.fetchall()
         for prop in properties:
@@ -63,8 +64,13 @@ def add_properties(items):
                 value = prop[4]
             name = prop[1]
             property_id = prop[0]
+            property_version = prop[6]
             if name is not None and value is not None:
-                item_properties.append({'id': property_id, 'name': name, 'value': value})
+                version_properties = item_properties.get(property_version)
+                if version_properties is None:
+                    version_properties = []
+                    item_properties[property_version] = version_properties
+                version_properties.append({'id': property_id, 'name': name, 'value': value})
         item['properties'] = item_properties
     return items
 
@@ -130,9 +136,10 @@ def store_event(version, run, event_type, timestamp, status, message, item_ident
     conn.close()
 
 
-def store_property(property_type, name, value, item_identifier, message_id):
+def store_property(property_type, name, value, item_identifier, version, message_id):
     conn, cur = get_connection()
-
+    if version is None:
+        version = 0
     item_id = get_item_id(item_identifier, add=True)
     int_value = None
     date_value = None
@@ -147,15 +154,16 @@ def store_property(property_type, name, value, item_identifier, message_id):
         # TODO: log error
         return
 
-    cur.execute(property_id_sql, (name, item_id))
+    cur.execute(property_id_sql, (name, item_id , version))
     conn.commit()
     row = cur.fetchone()
     if row is None:
         cur.execute(store_property_sql,
-                    (property_type, name, int_value, date_value, text_value, item_id, message_id, message_id))
+                    (property_type, name, int_value, date_value, text_value, item_id, message_id, version, message_id))
     else:
         property_id = row[0]
-        cur.execute(update_property_sql, (property_type, int_value, date_value, text_value, message_id, property_id))
+        cur.execute(update_property_sql, (property_type, int_value, date_value, text_value, message_id, version,
+                                          property_id))
     conn.commit()
     cur.close()
     conn.close()

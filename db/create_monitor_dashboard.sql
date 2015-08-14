@@ -43,6 +43,7 @@ CREATE INDEX event_idx_1 on event (version ASC,run ASC,item_id ASC);
 -- Table: property
 CREATE TABLE property (
     property_id SERIAL,
+    version int NOT NULL,
     name varchar(255)  NOT NULL,
     int_value int  NULL,
     text_value text  NULL,

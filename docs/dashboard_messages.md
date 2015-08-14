@@ -51,6 +51,7 @@ The dashboard may display these properties and/or use them to choose an 'event m
 ### properties
 
 - item-identifier - the f-id, e.g. 00288, 00013, derrived from the numeric portion of the DOI
+- version - associate property with a version, 0 to associate with all versions
 - name - the name of the property to set
 - value - the value of the property to set
 - property-type - int|date|text what type of property the value is
@@ -59,7 +60,8 @@ The dashboard may display these properties and/or use them to choose an 'event m
 
 ```json
 {
-	"message-type": "property"
+	"message-type": "property",
+	"version": 0,
 	"item_identifier": "00288",
 	"name": "Title",
 	"value": "Rapid localized spread and immunologic containment define Herpes simplex virus-2 reactivation in the human genital tract",
@@ -71,6 +73,7 @@ The dashboard may display these properties and/or use them to choose an 'event m
 ```json
 {
 	"message_type": "property"
+	"version", 1,
 	"item-identifier": "00288",
 	"name": "Corresponding authors",
 	"value": "Ian T Baldwin, Max Planck, John Anderson, Thomas Peel",

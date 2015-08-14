@@ -1,6 +1,13 @@
 from flask import Flask, render_template
+from boto.sqs.message import Message
 import dashboard_data_access
+import boto.sqs
+import json
+from optparse import OptionParser
+import settings as settings_lib
 
+global ENV
+global settings
 app = Flask(__name__)
 app.debug = True
 
@@ -29,5 +36,31 @@ def item_events(item_identifier):
         return render_template('events.html', events=events, item_identifier=item_identifier)
     # TODO: handle errors
 
+
+@app.route('/publish/<string:version_id>', methods=['POST', 'GET'])
+def publish_item(version_id):
+    if version_id is not None:
+        try:
+            message = {'workflow_name': 'ApproveArticlePublication',
+                       'workflow_data': {'article_version_id': version_id}}
+            message_string = json.dumps(message)
+            conn = boto.sqs.connect_to_region(settings.sqs_region,
+                                      aws_access_key_id=settings.aws_access_key_id,
+                                      aws_secret_access_key=settings.aws_secret_access_key)
+            queue = conn.get_queue(settings.workflow_starter_queue)
+
+            m = Message()
+            m.set_body(message_string)
+            queue.write(m)
+        except Exception as e:
+            print e
+
+
 if __name__ == '__main__':
+    parser = OptionParser()
+    parser.add_option("-e", "--env", default="dev", action="store", type="string", dest="env", help="set the environment to run, either dev or live")
+    (options, args) = parser.parse_args()
+    if options.env:
+        ENV = options.env
+    settings = settings_lib.get_settings(ENV)
     app.run()
