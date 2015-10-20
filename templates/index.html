@@ -16,10 +16,13 @@
                                 {%  else %}
                                     Properties for version {{ i }}:
                                 {% endif %}
-                                {% for property in article.properties[i] %}
-                                     <li>Name:{{ property.name }} Value:{{ property.value }}
-                                     {%  if (property.name == 'publication_status' and property.value =='ready') %}
-                                        <a href="/publish/{{ article.item_identifier }}.{{ i }}">publish article</a>
+                                {% for property_name, property_data in article.properties[i].iteritems() %}
+                                     <li>Name:{{ property_name}} Value:{{ property_data['value'] }}
+                                     {%  if (property_name == 'publication_status' and property_data['value'] =='ready') %}
+
+                                         <a href="{{ article.properties[i]['path']['value'] }}">preview article</a> |
+                                         <a href="/publish/{{ article.item_identifier }}.{{ i }}">publish article</a>
+
                                      {% endif %}
                                      </li>
                                 {%  endfor %}

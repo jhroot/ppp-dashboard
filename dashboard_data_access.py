@@ -68,9 +68,9 @@ def add_properties(items):
             if name is not None and value is not None:
                 version_properties = item_properties.get(property_version)
                 if version_properties is None:
-                    version_properties = []
+                    version_properties = {}
                     item_properties[property_version] = version_properties
-                version_properties.append({'id': property_id, 'name': name, 'value': value})
+                version_properties[name] = ({'id': property_id, 'value': value})
         item['properties'] = item_properties
     return items
 

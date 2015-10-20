@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from boto.sqs.message import Message
 import dashboard_data_access
 import boto.sqs
@@ -8,6 +8,7 @@ import settings as settings_lib
 
 global ENV
 global settings
+
 app = Flask(__name__)
 app.debug = True
 
@@ -54,6 +55,7 @@ def publish_item(version_id):
             queue.write(m)
         except Exception as e:
             print e
+    return jsonify({'message': 'publication request submitted'})
 
 
 if __name__ == '__main__':
